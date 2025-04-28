@@ -16,7 +16,7 @@ class TimeStampedModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        abtract = True
+        abstract = True
 
 
 class ContentView(TimeStampedModel):
@@ -55,7 +55,7 @@ class ContentView(TimeStampedModel):
         )
 
     @classmethod
-    def record_vierw(
+    def record_view(
         cls, content_object: Any, user: Optional[User], viewer_ip: Optional[str]
     ) -> None:
         content_type = ContentType.objects.get_for_model(content_object)
