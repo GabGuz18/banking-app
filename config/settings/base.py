@@ -31,6 +31,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "django_countries",
     "phonenumber_field",
     "drf_spectacular",
@@ -155,6 +156,45 @@ DEFAULT_COUNTRY = "MX"
 DEFAULT_PHONE_NUMBER = "+525555555555"
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "core_apps.common.cookie_auth.CookieAuthentication"
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "PAGE_SIZE": 10,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "50/day",
+        "user": "100/day",
+    },
+}
+
+SIMPLE_JWT = {
+    "SIGNING_KEY": getenv("SIGNING_KEY"),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+}
+
+DJOSER = {
+    "USER_ID_FIELD": "id",
+    "LOGIN_FIELD": "email",
+    "TOKEN_MODEL": None,
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_ACTIVATION_EMAIL": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "ACTIVATION_URL": "activate/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "password-reset/{uid}/{token}",
+    "SERIALIZERS": {
+        "user_create": "core_apps.user_auth.serializers.UserCreateSerializer",
+    },
 }
 
 SPECTACULAR_SETTINGS = {
@@ -163,7 +203,7 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "LICENSE": {
-        "name": "MIT",
+        "name": "MIT License",
         "url": "https://opensource.org/license/mit",
     },
 }
@@ -195,13 +235,21 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET,
 )
 
+COOKIE_NAME = "access"
+COOKIE_SAMESITE = "Lax"
+COOKIE_PATH = "/"
+COOKIE_HTTPONLY = True
+COOKIE_SECURE = getenv("COOKIE_SECURE", "True") == "True"
+
+LOGGING_CONFIG = None
+
 LOGURU_LOGGING = {
     "handlers": [
         {
             "sink": BASE_DIR / "logs/debug.log",
             "level": "DEBUG",
             "filter": lambda record: record["level"].no <= logger.level("WARNING").no,
-            "format": "{time:YYYY-MM-DD at HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+            "format": "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
             "rotation": "10MB",
             "retention": "30 days",
             "compression": "zip",
@@ -209,12 +257,12 @@ LOGURU_LOGGING = {
         {
             "sink": BASE_DIR / "logs/error.log",
             "level": "ERROR",
-            "format": "{time:YYYY-MM-DD at HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+            "format": "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
             "rotation": "10MB",
             "retention": "30 days",
             "compression": "zip",
             "backtrace": True,
-            "diagnose": False,
+            "diagnose": True,
         },
     ]
 }

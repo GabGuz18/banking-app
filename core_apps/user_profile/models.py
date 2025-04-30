@@ -158,7 +158,6 @@ class Profile(TimeStampedModel):
     employer_name = models.CharField(
         _("Employer Name"),
         max_length=50,
-        default="Unkwown",
         blank=True,
         null=True,
     )
@@ -188,10 +187,11 @@ class Profile(TimeStampedModel):
 
     def clean(self) -> None:
         super().clean()
-        if self.id_expiry_date <= self.id_issue_date:
-            raise ValidationError(
-                _("ID Expiry Date must be greater than ID Issue Date.")
-            )
+        if self.id_issue_date and self.id_expiry_date:
+            if self.id_expiry_date <= self.id_issue_date:
+                raise ValidationError(
+                    _("ID Expiry Date must be greater than ID Issue Date.")
+                )
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         self.full_clean()
@@ -219,7 +219,7 @@ class Profile(TimeStampedModel):
             self.signature_photo,
         ]
 
-        return all(required_fields) and self.next_of_kin().exists()
+        return all(required_fields) and self.next_of_kin.exists()
 
     def __str__(self):
         return f"{self.title} {self.user.first_name} Profile"
