@@ -50,7 +50,8 @@ class CustomTokenCreateView(TokenCreateView):
         if user.is_blocked_out:
             return Response(
                 {
-                    "error": f"Account is blocked due to multiple failed login attempts, try again after {settings.LOCKOUT_DURATION.total_seconds() / 60} minutes."
+                    "error": f"Account is blocked due to multiple failed login attempts, "
+                    "try again after {settings.LOCKOUT_DURATION.total_seconds() / 60} minutes."
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
@@ -112,7 +113,9 @@ class CustomTokenRefreshView(TokenRefreshView):
 
             if access_token and refresh_token:
                 set_auth_cookies(
-                    refresh_res, access_token=access_token, refresh_token=refresh_token
+                    refresh_res,
+                    access_token=access_token,
+                    refresh_token=refresh_token,
                 )
 
                 refresh_res.data.pop("access", None)
@@ -121,8 +124,12 @@ class CustomTokenRefreshView(TokenRefreshView):
                 refresh_res.data["message"] = "Access tokens refreshed successfully."
 
             else:
-                refresh_res.data["message"] = "Access or refresh token not found."
-                logger.error("Access or refresh token not found.")
+                refresh_res.data["message"] = (
+                    "Access or refresh token not found in refresh response data"
+                )
+                logger.error(
+                    "Access or refresh token not found in refresh response data"
+                )
 
         return refresh_res
 
@@ -138,7 +145,7 @@ class OTPVerifyView(APIView):
                 {"error": "OTP is required."}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = User.objects.filter(otp=otp, otp_expiry_time__gt=timezone.now()).first()
+        user = User.objects.filter(otp=otp, otp_expiry__gt=timezone.now()).first()
         if not user:
             return Response(
                 {"error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST
