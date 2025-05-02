@@ -40,6 +40,7 @@ class CustomUserAdmin(UserAdmin):
                     "middle_name",
                     "last_name",
                     "id_no",
+                    "role",
                 )
             },
         ),

@@ -22,7 +22,9 @@ urlpatterns = [
     ),
     path("api/v1/auth/", include("djoser.urls")),
     path("api/v1/auth/", include("core_apps.user_auth.urls")),
+    path("api/v1/profiles/", include("core_apps.user_profile.urls")),
 ]
+
 admin.site.site_header = "Dirty Bank Admin"
 admin.site.site_title = "Dirty Bank Admin Portal"
 admin.site.index_title = "Welcome to Dirty Bank Admin Portal"
