@@ -1,0 +1,18 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+  Your transfer OTP
+{% endblock title %}
+
+{% block content %}
+  <h2>Your One Time Password</h2>
+  <p>Your OTP is <strong> {{ otp }} </strong></p>
+  <p>This OTP will expire in <strong> {{ expiry_time }} </strong> minutes.</p>
+  <p>If you didn't request this OTP please ignore the email and contact our support team immediately.</p>
+  <p>Best regards.</p>
+  <p>
+    <strong>
+      {{ site_name }} Team
+    </strong>
+  </p>
+{% endblock content %}

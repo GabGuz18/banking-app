@@ -1,0 +1,29 @@
+{% extends "emails/base.html" %}
+{% load humanize %}
+
+{% block title %}
+  Withdrawal notification
+{% endblock title %}
+
+{% block content %}
+  <h2>Withdrawal confirmation</h2>
+  <p>Dear {{ user }}</p>
+  <p>We are writing to confirm that a withdrawal has been made from your account.</p>
+  <p>Details of your transaction:</p>
+  <ul>
+    <li><strong>Withdrawal Amount:</strong> {{ currency }} {{ amount|intcomma }}</li>
+    <li><strong>Account number: </strong> {{ account_number }}</li>
+    <li><strong>Your new balance:</strong> {{ currency }} {{ new_balance|intcomma }}</li>
+  </ul>
+  <p>
+    If you did not authorize this transaction or have any questions,
+    please don't hesitate to contact our customer support immediately.
+  </p>
+  <p>Thank you for choosing <strong>{{ site_name }}</strong> </p>
+  <p>Best regards.</p>
+  <p>
+    <strong>
+      {{ site_name }} Team
+    </strong>
+  </p>
+{% endblock content %}
